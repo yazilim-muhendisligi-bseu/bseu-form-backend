@@ -3,7 +3,9 @@ const app = express()
 const port = 8080
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json())
+
 
 // Models
 const Option = require("./models/Option")
@@ -17,11 +19,8 @@ dotenv.config();
 mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.post('/test', (req, res) => {
-    const body = req.body
-    console.log(JSON.parse(body))
-    return
-    category = JSON.parse(category)
-    questions = JSON.parse(questions)
+    console.log(req.body)
+    const { title, questions, category } = req.body
 
     const qs = questions.map(q => {
         const question = new Question(q)

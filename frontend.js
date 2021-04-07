@@ -30,7 +30,7 @@ const test = {
     ]
 }
 
-axios.post('http://localhost:8080/post', test).then(res => {
+axios.post('http://localhost:8080/test', test).then(res => {
     console.log(res)
 }).catch(err => {
     console.log(err)
