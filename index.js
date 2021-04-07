@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const port = 8080
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Models
 const Option = require("./models/Option")
@@ -13,6 +15,38 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+
+app.post('/test', (req, res) => {
+    const body = req.body
+    console.log(JSON.parse(body))
+    return
+    category = JSON.parse(category)
+    questions = JSON.parse(questions)
+
+    const qs = questions.map(q => {
+        const question = new Question(q)
+        // question.save().then(data => {
+        //     console.log(data)
+        // }).catch(err => {
+        //     console.log(err)
+        // })
+        return question
+    })
+
+    const ct = new Category(category)
+
+    const test = new Test({
+        title,
+        category: ct,
+        questions: qs
+    })
+
+    test.save().then(data => {
+        console.log(data)
+    }).catch(err => {
+        console.log(err)
+    })
+})
 
 app.get('/', (req, res) => {
 
