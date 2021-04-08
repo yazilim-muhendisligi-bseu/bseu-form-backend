@@ -30,7 +30,20 @@ const test = {
     ]
 }
 
-axios.post('http://localhost:8080/test', test).then(res => {
+// axios.post('http://localhost:8080/test', test).then(res => {
+//     console.log(res)
+// }).catch(err => {
+//     console.log(err)
+// })
+
+const data = {
+    username: 'Akseyh',
+    answers: {
+        '606dfb8ec2953be524c6a36f': '606dfb8ec2953be524c6a36e'
+    }
+}
+
+axios.post('http://localhost:8080/test/606f54b117e7dd09ceb59439', data).then(res => {
     console.log(res)
 }).catch(err => {
     console.log(err)

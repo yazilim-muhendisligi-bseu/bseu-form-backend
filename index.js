@@ -8,6 +8,7 @@ app.use(bodyParser.json())
 
 
 // Models
+const Answer = require("./models/Answer")
 const Option = require("./models/Option")
 const Test = require("./models/Test")
 const Question = require("./models/Question")
@@ -47,8 +48,25 @@ app.post('/test', (req, res) => {
     })
 })
 
-app.get('/', (req, res) => {
+app.get('/test', async (req, res) => {
+    const tests = await Test.find({}, (err, tests) => {
+        return tests
+    })
+    res.json(tests)
+})
 
+app.post('/test/:id', async (req, res) => {
+    const {username, answers} = req.body
+    const answer = new Answer({ username, answers })
+
+    answer.save().then(data => {
+        console.log(data)
+    }).catch(err => {
+        console.log(err)
+    })
+})
+
+app.get('/', (req, res) => {
     const option1 = new Option({ title: 'İstanbul' })
     const option2 = new Option({ title: 'Konya' })
     const option3 = new Option({ title: 'Sakarya' })
