@@ -19,21 +19,46 @@ dotenv.config();
 
 mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
-app.post('/test', (req, res) => {
-    console.log(req.body)
+app.post('/test', async (req, res) => {
     const { title, questions, category } = req.body
 
-    const qs = questions.map(q => {
-        const question = new Question(q)
-        // question.save().then(data => {
-        //     console.log(data)
-        // }).catch(err => {
-        //     console.log(err)
-        // })
-        return question
-    })
+    const qs = await Promise.all(
+        questions.map(async q => {
+            const options = await Promise.all(
+                q.options.map(async op => {
+                    const haveOption = await Option.find({ title: op.title }).exec()
+                    if (!!haveOption.length) return haveOption[0]
 
-    const ct = new Category(category)
+                    const option = new Option(op)
+                    return option.save().catch(err => {
+                        return null
+                    })
+                })
+            )
+
+            const correctOption = await Option.find({ title: q.correctOption.title }).exec()
+
+            const question = new Question({
+                ...q,
+                options,
+                correctOption: correctOption[0]
+            })
+
+            return question.save().catch(err => {
+                console.log(err)
+            })
+        })
+    )
+    let ct
+    const hasCategory = await Category.find({ title: category.title }).exec()
+    if (hasCategory.length) {
+        ct = hasCategory[0]
+    } else {
+        ct = new Category(category)
+        ct = await ct.save().catch(err => {
+            console.log(err)
+        })
+    }
 
     const test = new Test({
         title,
@@ -49,14 +74,12 @@ app.post('/test', (req, res) => {
 })
 
 app.get('/test', async (req, res) => {
-    const tests = await Test.find({}, (err, tests) => {
-        return tests
-    })
+    const tests = await Test.find({})
     res.json(tests)
 })
 
 app.post('/test/:id', async (req, res) => {
-    const {username, answers} = req.body
+    const { username, answers } = req.body
     const answer = new Answer({ username, answers })
 
     answer.save().then(data => {
