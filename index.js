@@ -69,6 +69,7 @@ app.post('/test', async (req, res) => {
     })
 
     test.save().then(data => {
+        res.send(data)
         console.log(data)
     }).catch(err => {
         console.log(err)
